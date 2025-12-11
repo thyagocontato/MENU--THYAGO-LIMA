@@ -19,7 +19,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     const [date, setDate] = useState('2026-01-01');
     const [time, setTime] = useState('');
     const [location, setLocation] = useState('');
-    const [guests, setGuests] = useState(2);
+    const [guests, setGuests] = useState<number | string>(2); // Changed to allow typing
     const [selectedItems, setSelectedItems] = useState<MenuItem[]>([]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
 
     const handleNext = () => {
         if (step === 1) {
-            if (!clientName || !clientPhone || !date || !time || !location) {
+            if (!clientName || !clientPhone || !date || !time || !location || !guests) {
                 alert("Por favor, preencha todas as informações para prosseguirmos.");
                 return;
             }
@@ -84,6 +84,8 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     };
 
     const handleFinalize = async () => {
+        const finalGuests = typeof guests === 'string' ? parseInt(guests) || 0 : guests;
+
         const newOrder: Order = {
             id: Date.now().toString(),
             clientName,
@@ -91,7 +93,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
             date,
             time,
             location,
-            guests,
+            guests: finalGuests,
             items: selectedItems,
             pricePerHead: 0,
             totalValue: 0,
@@ -109,7 +111,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
 *Contato:* ${clientPhone}
 *Data:* ${new Date(date).toLocaleDateString()} às ${time}
 *Local:* ${location}
-*Convidados:* ${guests} pessoas
+*Convidados:* ${finalGuests} pessoas
 
 *Minha Seleção:*
 ${itemsList}
@@ -194,16 +196,18 @@ Aguardo o retorno. Obrigado!`;
 
                 <div className="space-y-4 pt-2">
                     <label className="flex items-center gap-2 text-primary font-bold text-lg font-serif">Número de Convidados</label>
-                    <div className="bg-cream p-6 border border-secondary/20 flex flex-col items-center">
-                        <span className="text-4xl font-serif font-bold text-primary mb-4">{guests}</span>
-                        <input 
-                            type="range" 
-                            min="2" 
-                            max="60" 
-                            value={guests} 
-                            onChange={(e) => setGuests(parseInt(e.target.value))}
-                            className="w-full h-1 bg-secondary/30 rounded-lg appearance-none cursor-pointer accent-primary"
-                        />
+                    <div className="bg-cream/50 p-6 border border-secondary/20 flex flex-col items-center justify-center">
+                        <div className="relative w-32">
+                            <input 
+                                type="number" 
+                                min="1"
+                                value={guests} 
+                                onChange={(e) => setGuests(e.target.value)}
+                                className="w-full text-center bg-transparent border-b-2 border-secondary text-4xl font-serif font-bold text-primary focus:outline-none focus:border-primary/50 transition-colors p-2"
+                                placeholder="0"
+                            />
+                        </div>
+                        <span className="text-xs text-secondary font-sans tracking-widest uppercase mt-2">Pessoas</span>
                     </div>
                 </div>
             </div>

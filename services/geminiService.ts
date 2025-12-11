@@ -1,7 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { BusinessStats, MenuItem } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Ensure we handle the case where process.env might be checked before substitution (though Vite defines it)
+const apiKey = process.env.API_KEY || '';
+const ai = new GoogleGenAI({ apiKey });
 
 export const generateMenuDescription = async (itemName: string, ingredients: string): Promise<string> => {
   try {
@@ -12,7 +14,8 @@ export const generateMenuDescription = async (itemName: string, ingredients: str
       Ingredientes principais: ${ingredients}
       Mantenha a descrição com menos de 30 palavras.`,
     });
-    return response.text.trim();
+    // Check if text exists before accessing
+    return response.text ? response.text.trim() : "Descrição indisponível.";
   } catch (error) {
     console.error("Error generating description:", error);
     return "Descrição indisponível no momento.";
@@ -39,7 +42,8 @@ export const analyzeBusinessData = async (stats: BusinessStats): Promise<string>
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
-    return response.text;
+    // Check if text exists before returning
+    return response.text || "<p>Não foi possível gerar análise no momento.</p>";
   } catch (error) {
     console.error("Error analyzing business:", error);
     return "<p>Não foi possível gerar análise no momento. Verifique sua conexão ou chave API.</p>";

@@ -1,85 +1,78 @@
 import { MenuItem, Order, OrderStatus } from '../types';
 
-const MENU_KEY = 'chefcontrol_menu_v2';
-const ORDERS_KEY = 'chefcontrol_orders_v2';
+const MENU_KEY = 'chefcontrol_menu_2026_v1';
+const ORDERS_KEY = 'chefcontrol_orders_2026_v1';
 
-// Seed data based on Chef Thyago Lima 2025 Menu
 const SEED_MENU: MenuItem[] = [
-  // Entradas
-  { id: 'e1', name: 'Camarão Crocante', category: 'Entrada', price: 0, description: 'Camarão empanado na panko - mayo de gochujang. (Levemente apimentado)' },
-  { id: 'e2', name: 'Camarão in Fonduta', category: 'Entrada', price: 0, description: 'Camarão grelhado na manteiga de sálvia e salsa - mergulhado em uma fonduta cremosa de queijo parmesão.' },
-  { id: 'e3', name: 'Crocchetta di Baccalhau', category: 'Entrada', price: 0, description: 'Clássico bolinho de bacalhau, temperado com ervas frescas e empanado. Servido com aioli cítrico.' },
-  { id: 'e4', name: 'Crocchetta di Siri', category: 'Entrada', price: 0, description: 'Croquete de siri com massa leve de batata, crocância perfeita do panko e um toque refrescante de mayo de coentro.' },
-  { id: 'e5', name: 'Ceviche', category: 'Entrada', price: 0, description: 'Peixe fresco - leite de tigre de coco fresco - cebola roxa - limão e laranja Bahia.' },
-  { id: 'e6', name: 'Polpo alla Vinagretta', category: 'Entrada', price: 0, description: 'Polvo macio cortado delicadamente, servido com um vinagrete de mix de tomates frescos, azeite cítrico de limão siciliano.' },
-  { id: 'e7', name: 'Cruda di Atum', category: 'Entrada', price: 0, description: 'Pedaços de atum fresco cortado, harmonizado com um mix de tomates selecionados, azeite cítrico e flor de sal.' },
-  { id: 'e8', name: 'Ostra Fresca', category: 'Entrada', price: 0, description: 'Pesto de rúcula ou vinagrete de melancia - limão.' },
-  { id: 'e9', name: 'Ostriche Gratinate', category: 'Entrada', price: 0, description: 'Ostras frescas temperadas com manteiga e alho, gratinadas com um creme aveludado de queijo parmesão.' },
-  { id: 'e10', name: 'Bacalhau no Aioli', category: 'Entrada', price: 0, description: 'Lascas do lombo do bacalhau cozido no sous-vide - aioli - azeitona roxa.' },
-  { id: 'e11', name: 'Milho doce Grigliata', category: 'Entrada', price: 0, description: 'Milho doce grelhado na manteiga, servido com creme de queijo e toque de azeite trufado.' },
-  { id: 'e12', name: 'Creme de Brie Trufado', category: 'Entrada', price: 0, description: 'Creme de queijo Brie com toque de geleia de frutas amarelas trufada, acompanhado de torradas artesanais.' },
-  { id: 'e13', name: 'Carpaccio di Manzo', category: 'Entrada', price: 0, description: 'Lâminas finas de filé mignon, rúcula fresca, lascas de parmesão, alcaparras e azeite de oliva.' },
-  { id: 'e14', name: 'Crocchetta di Cupim', category: 'Entrada', price: 0, description: 'Delicado croquete de cupim com massa cremosa de batata, empanado em panko dourado, mayo de gorgonzola dolce.' },
-  { id: 'e15', name: 'Filetto in Fonduta Tartufata', category: 'Entrada', price: 0, description: 'Suave filé mignon ao ponto perfeito, mergulhado em uma fonduta cremosa de queijo parmesão e azeite trufado.' },
-  { id: 'e16', name: 'Piccolo Burger', category: 'Entrada', price: 0, description: 'Mini burger artesanal no pão brioche, queijo brie derretido, presunto de parma crocante.' },
-  { id: 'e17', name: 'Maminha Argentina al Sous Vide', category: 'Entrada', price: 0, description: 'Cozido lentamente em sous vide, molho de mostarda e pó trufado.' },
-  { id: 'e18', name: 'Carne Cruda con Crema di Capra', category: 'Entrada', price: 0, description: 'Filé mignon picado na ponta da faca, alcaparras, mostarda, azeite. Creme de queijo de cabra e massa crocante.' },
+  // ENTRADAS - O Início (Frios e Leves)
+  { id: 'e1', name: 'Ceviche de Peixe Branco', category: 'Entrada', price: 0, description: 'Marinado no leite de tigre de coco natural, cebola roxa, toque de limão e perfume de laranja Bahia.' },
+  { id: 'e2', name: 'Crudo de Atum', category: 'Entrada', price: 0, description: 'Cubos de atum vermelho fresco, mix de tomates selecionados, azeite de limão siciliano e flor de sal.' },
+  { id: 'e3', name: 'Tartare de Salmão & Filo', category: 'Entrada', price: 0, description: 'Salmão picado na ponta da faca, azeite e flor de sal. Servido com a crocância da massa filo.' },
+  { id: 'e4', name: 'Carpaccio com Sorvete de Mostarda', category: 'Entrada', price: 0, description: 'Lâminas de carne, sorvete artesanal de mostarda, lascas de parmesão, alcaparras e azeite.' },
+  { id: 'e5', name: 'Steak Tartare do Chef', category: 'Entrada', price: 0, description: 'Filé mignon, alcaparras, tabasco e mostarda. Acompanha creme azedo e massa filo crocante.' },
+  { id: 'e6', name: 'Mini Focaccia & Brie', category: 'Entrada', price: 0, description: 'Focaccia artesanal com creme de queijo brie aveludado e manteiga especial da casa.' },
+  
+  // ENTRADAS - Do Fogo e Grelha
+  { id: 'e7', name: 'Robata de Lagosta', category: 'Entrada', price: 0, description: 'Espetinhos de lagosta grelhados na manteiga de missô (umami) com toque cítrico.' },
+  { id: 'e8', name: 'Robata de Filé Glaceada', category: 'Entrada', price: 0, description: 'Cubos de filé mignon grelhados com blend exclusivo de molho de ostra e mostarda.' },
+  { id: 'e9', name: 'Polvo & Páprica', category: 'Entrada', price: 0, description: 'Tentáculo de polvo macio, batatas douradas e maionese defumada de páprica.' },
+  { id: 'e10', name: 'Milho Tostado Trufado', category: 'Entrada', price: 0, description: 'Milho doce grelhado na manteiga sobre creme de queijo suave e azeite de trufas.' },
+  { id: 'e11', name: 'Bacalhau Gratinado', category: 'Entrada', price: 0, description: 'Creme rico e aveludado de bacalhau gratinado ao forno. Servido com pão artesanal.' },
+  { id: 'e12', name: 'Bacalhau Confitado (Sous-vide)', category: 'Entrada', price: 0, description: 'Lombos de bacalhau em azeite aromático e azeitona roxa, cozidos em baixa temperatura.' },
+  { id: 'e13', name: 'Maminha de Lenta Cocção', category: 'Entrada', price: 0, description: 'Corte nobre em baixa temperatura, extremamente suculento, com delicado molho roti.' },
+  { id: 'e14', name: 'Camarão na Fonduta de Sálvia', category: 'Entrada', price: 0, description: 'Camarões grelhados na sálvia em creme de parmesão. Acompanha focaccia.' },
+  { id: 'e15', name: 'Filé na Fonduta Trufada', category: 'Entrada', price: 0, description: 'Cubos de mignon ao ponto em creme de parmesão finalizados com azeite trufado.' },
 
-  // Pratos Principais
-  { id: 'p1', name: 'Aragosta con Fettuccine', category: 'Principal', price: 0, description: 'Lagosta grelhada, pasta fresca artesanal e molho de tomate-cereja e pimentões assados.' },
-  { id: 'p2', name: 'Cappelletti al Tonno Tartufato', category: 'Principal', price: 0, description: 'Massa recheada com mozzarella fresca, coberta por tartare de atum fresco e toque de azeite trufado.' },
-  { id: 'p3', name: 'Carretto d’Agnello con Gnocchi', category: 'Principal', price: 0, description: 'Carré de cordeiro grelhado, servido com gnocchi dourado de baroa e toque de ervas frescas.' },
-  { id: 'p4', name: 'Carré d’Agnello con Purè', category: 'Principal', price: 0, description: 'Carré de cordeiro grelhado, acompanhado de purê de batatas cremoso com Parmigiano Reggiano.' },
-  { id: 'p5', name: 'Fettuccine al Baccalà', category: 'Principal', price: 0, description: 'Lascas de bacalhau refogadas no azeite de alho, servidas com fettuccine artesanal e azeitonas azapa.' },
-  { id: 'p6', name: 'Filetto ai Funghi', category: 'Principal', price: 0, description: 'Filé mignon grelhado ao molho de cogumelos, servido com gnocchis dourados de baroa e molho de carne ao vinho.' },
-  { id: 'p7', name: 'Filetto di Manzo con Pappardelle', category: 'Principal', price: 0, description: 'Filé mignon grelhado, acompanhado de pappardelle artesanal puxado na manteiga, vinho e caldo de carne.' },
-  { id: 'p8', name: 'Gnocchi ai Gamberi', category: 'Principal', price: 0, description: 'Gnocchi macio de batatas assadas e pó de trufa, molho cremoso de Grana Padano, cogumelos frescos e azeite trufado.' },
-  { id: 'p9', name: 'A Lasagna', category: 'Principal', price: 0, description: 'Pedaço de lasagna grelhado na manteiga, molho de queijo e vinho, massa fresca e muzzarela.' },
-  { id: 'p10', name: 'Pesce del Giorno', category: 'Principal', price: 0, description: 'Filet de peixe grelhado com alcaparras, sobre abobrinha, tomatinhos-cereja, cebola e alho confitados.' },
-  { id: 'p11', name: 'Ravioli d’Anatra all’Arancia', category: 'Principal', price: 0, description: 'Massa artesanal recheada com pato confitado, coberta por molho de laranja e vinho.' },
-  { id: 'p12', name: 'Ravioli di Ricotta e Pere', category: 'Principal', price: 0, description: 'Massa fresca recheada com ricota italiana, molho adocicado de peras assadas e emulsão de manteiga de ervas.' },
-  { id: 'p13', name: 'Risotto ai Frutti di Mare', category: 'Principal', price: 0, description: 'Risoto cremoso em caldo de frutos do mar, servido com camarão, polvo e lula.' },
-  { id: 'p14', name: 'Saltimbocca alla Romana', category: 'Principal', price: 0, description: 'Escalope de Filé ao molho de vinho, sálvia e Parma. Acompanhado de fettuccine artesanal.' },
-  { id: 'p15', name: 'Saltimbocca con Gnocchi', category: 'Principal', price: 0, description: 'Escalope grelhado ao molho de vinho, sálvia e Parma, acompanhado de gnocchi de batata.' },
-  { id: 'p16', name: 'Spaghetti al Beurre Blanc', category: 'Principal', price: 0, description: 'Massa fresca com camarões grelhados, envolta no tradicional molho francês beurre blanc.' },
-  { id: 'p17', name: 'Spaghetti al Salmone', category: 'Principal', price: 0, description: 'Spaghetti envolto em fonduta de queijos, coberto por pedaços de salmão fresco.' },
-  { id: 'p18', name: 'Spaghetti ai Frutti di Mare', category: 'Principal', price: 0, description: 'Espaguete artesanal servido com molho rústico de tomate, camarão, polvo e lula.' },
-  { id: 'p19', name: 'Tortellini Cacio e Pepe', category: 'Principal', price: 0, description: 'Massa artesanal com molho romano cacio e pepe, camarões no vapor e limão siciliano.' },
-  { id: 'p20', name: 'Tortelloni al Pesce', category: 'Principal', price: 0, description: 'Filet de peixe grelhado, crosta dourada, servido com massa artesanal recheada de ricota.' },
+  // ENTRADAS - A Crocância
+  { id: 'e16', name: 'Croqueta de Siri Panko', category: 'Entrada', price: 0, description: 'Carne de siri pura e suculenta empanada na panko com maionese de coentro.' },
+  { id: 'e17', name: 'Croqueta de Cupim Defumado', category: 'Entrada', price: 0, description: 'Cupim desfiado em croquete delicado com redução de balsâmico.' },
+  { id: 'e18', name: 'Bolinho de Bacalhau Clássico', category: 'Entrada', price: 0, description: 'Receita tradicional com ervas frescas e casquinha dourada. Aioli cítrico.' },
+  { id: 'e19', name: 'Camarão Crocante Spicy', category: 'Entrada', price: 0, description: 'Empanados na panko com maionese de Gochujang levemente apimentada.' },
+  { id: 'e20', name: 'Piccolo Burger de Brie', category: 'Entrada', price: 0, description: 'Mini burger no brioche, queijo brie derretido e blend especial de carnes.' },
 
-  // Sobremesas
-  { id: 's1', name: 'Torta de Chocolate Caramelo', category: 'Sobremesa', price: 0, description: 'Massa de biscoito crocante, caramelo salgado, chocolate e toque de flor de sal.' },
-  { id: 's2', name: 'Banoffee', category: 'Sobremesa', price: 0, description: 'Massa de biscoito, doce de leite, banana e creme chantili.' },
-  { id: 's3', name: 'Pudim', category: 'Sobremesa', price: 0, description: 'Opções: Tradicional ou Pistache.' },
+  // PRATOS PRINCIPAIS - Saladas e Grelhados
+  { id: 'p1', name: 'Salada de Salmão Maçaricado', category: 'Principal', price: 0, description: 'Folhas nobres, salmão maçaricado, tomate confit, crocante de sementes e molho cítrico.' },
+  { id: 'p2', name: 'Salada Tropical de Camarão', category: 'Principal', price: 0, description: 'Camarões grelhados, manga, castanhas tostadas e vinagrete de limão siciliano com mel.' },
+  { id: 'p3', name: 'Camarão & Arroz de Pistache', category: 'Principal', price: 0, description: 'Grelhados na manteiga de ervas com arroz cremoso de pistache e amêndoas.' },
+  
+  // PRATOS PRINCIPAIS - Risotos
+  { id: 'p4', name: 'Risoto de Polvo & Limão Siciliano', category: 'Principal', price: 0, description: 'Toque cítrico com polvo na manteiga de páprica e azeite de manjericão.' },
+  { id: 'p5', name: 'Risoto de Parmesão & Camarão Panko', category: 'Principal', price: 0, description: 'Cremosidade do Grana Padano com camarões crocantes e farofa de bacon.' },
+  { id: 'p6', name: 'Risoto de Filé Mignon ao Roti', category: 'Principal', price: 0, description: 'Arbóreo com parmesão, iscas de filé, palha de alho-poró e redução de balsâmico.' },
+
+  // PRATOS PRINCIPAIS - Massas
+  { id: 'p7', name: 'Cauda de Lagosta & Fettuccine', category: 'Principal', price: 0, description: 'Lagosta grelhada na casca sobre fettuccine ao molho rústico de tomates assados.' },
+  { id: 'p8', name: 'Sorrentino de Búfala & Camarão', category: 'Principal', price: 0, description: 'Massa recheada com búfala, molho rústico, manjericão e camarões grelhados.' },
+  { id: 'p9', name: 'Ravioli de Pera, Ricota & Camarão', category: 'Principal', price: 0, description: 'Massa de pera e ricota com camarões e manteiga noisette de amêndoas.' },
+  { id: 'p10', name: 'Ravioli de Pato com Laranja', category: 'Principal', price: 0, description: 'Massa fresca de pato confitado com molho aveludado de laranja e vinho.' },
+  { id: 'p11', name: 'Tortellini Cacio e Pepe com Camarão', category: 'Principal', price: 0, description: 'Molho romano de queijo e pimenta com camarões e raspas de limão.' },
+
+  // PRATOS PRINCIPAIS - Carnes
+  { id: 'p12', name: 'Stinco de Cordeiro & Gnocchi', category: 'Principal', price: 0, description: 'Cozido lentamente com o próprio molho reduzido e gnocchi dourado na manteiga.' },
+  { id: 'p13', name: 'Carré de Cordeiro & Baroa', category: 'Principal', price: 0, description: 'Ponto rosado com gnocchi artesanal de batata baroa e ervas frescas.' },
+  { id: 'p14', name: 'Filé ao Funghi & Gnocchi', category: 'Principal', price: 0, description: 'Medalhão grelhado ao molho de cogumelos e vinho tinto com gnocchi artesanal.' },
+  { id: 'p15', name: 'Saltimbocca com Fettuccine', category: 'Principal', price: 0, description: 'Escalopes com sálvia e presunto cru sobre fettuccine artesanal na manteiga.' },
+
+  // SOBREMESAS
+  { id: 's1', name: 'Torta de Chocolate & Caramelo Salgado', category: 'Sobremesa', price: 0, description: 'Base de biscoito crocante, ganache meio amargo, caramelo toffee e flor de sal.' },
+  { id: 's2', name: 'Banoffee Especial da Casa', category: 'Sobremesa', price: 0, description: 'Base crocante, doce de leite argentino, bananas frescas e chantilly de verdade.' },
+  { id: 's3', name: 'Pudim Perfeito (Leite ou Pistache)', category: 'Sobremesa', price: 0, description: 'Textura super lisa e cremosa, sem furinhos. Versão tradicional ou pistache.' },
 ];
 
 const SEED_ORDERS: Order[] = [
   {
-    id: '101',
-    clientName: 'Mariana Costa',
+    id: '2026-001',
+    clientName: 'Exemplo de Atendimento',
     clientPhone: '84999999999',
-    date: '2025-01-20',
-    time: '20:00',
+    date: '2026-03-15',
+    time: '20:30',
     location: 'Tirol, Natal',
-    guests: 10,
-    items: [SEED_MENU[0], SEED_MENU[4], SEED_MENU[5], SEED_MENU[12], SEED_MENU[20], SEED_MENU[22], SEED_MENU[28]], // Sample items
-    pricePerHead: 180,
-    totalValue: 1800.00,
+    guests: 12,
+    items: [SEED_MENU[0], SEED_MENU[1], SEED_MENU[15], SEED_MENU[19], SEED_MENU[22], SEED_MENU[32], SEED_MENU[35]],
+    pricePerHead: 0,
+    totalValue: 0,
     status: OrderStatus.CONFIRMED
-  },
-  {
-    id: '102',
-    clientName: 'Dr. Ricardo',
-    clientPhone: '84988888888',
-    date: '2025-02-15',
-    time: '21:00',
-    location: 'Ponta Negra',
-    guests: 6,
-    items: [SEED_MENU[1], SEED_MENU[2], SEED_MENU[3], SEED_MENU[4], SEED_MENU[18], SEED_MENU[19], SEED_MENU[29]],
-    pricePerHead: 190,
-    totalValue: 1140.00,
-    status: OrderStatus.PENDING
-  },
+  }
 ];
 
 export const getMenu = (): MenuItem[] => {
@@ -133,7 +126,6 @@ export const getTopFavorites = (limit: number = 3): MenuItem[] => {
 
     const favorites = sortedIds.map(id => itemMap[id]).filter(Boolean);
     
-    // Fallback if no history yet
     if (favorites.length === 0) {
         return getMenu().slice(0, limit);
     }

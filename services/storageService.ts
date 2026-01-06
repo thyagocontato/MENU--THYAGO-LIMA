@@ -33,7 +33,7 @@ const SEED_MENU: MenuItem[] = [
   // PRATOS PRINCIPAIS - Saladas e Grelhados
   { id: 'p1', name: 'Salada de Salmão Maçaricado', category: 'Principal', price: 0, description: 'Folhas nobres, salmão maçaricado, tomate confit, crocante de sementes e molho cítrico.' },
   { id: 'p2', name: 'Salada Tropical de Camarão', category: 'Principal', price: 0, description: 'Camarões grelhados, manga, castanhas tostadas e vinagrete de limão siciliano com mel.' },
-  { id: 'p3', name: 'Camarão & Arroz de Pistache', category: 'Principal', price: 0, description: 'Grelhados na manteiga de ervas com arroz cremoso de pistache e amêndoas.' },
+  { id: 'p3', name: 'Camarão & Arroz de Pistache', category: 'Principal', price: 0, description: 'Grelhados na manteiga de ervas com arroz soltinho de pistache e amêndoas.' },
   
   // PRATOS PRINCIPAIS - Risotos
   { id: 'p4', name: 'Risoto de Polvo & Limão Siciliano', category: 'Principal', price: 0, description: 'Toque cítrico com polvo na manteiga de páprica e azeite de manjericão.' },
@@ -42,7 +42,7 @@ const SEED_MENU: MenuItem[] = [
 
   // PRATOS PRINCIPAIS - Massas
   { id: 'p7', name: 'Cauda de Lagosta & Fettuccine', category: 'Principal', price: 0, description: 'Lagosta grelhada na casca sobre fettuccine ao molho rústico de tomates assados.' },
-  { id: 'p8', name: 'Sorrentino de Búfala & Camarão', category: 'Principal', price: 0, description: 'Massa recheada com búfala, molho rústico, manjericão e camarões grelhados.' },
+  { id: 'p8', name: 'Ravioli de Búfala & Camarão', category: 'Principal', price: 0, description: 'Massa recheada com búfala, molho rústico, manjericão e camarões grelhados.' },
   { id: 'p9', name: 'Ravioli de Pera, Ricota & Camarão', category: 'Principal', price: 0, description: 'Massa de pera e ricota com camarões e manteiga noisette de amêndoas.' },
   { id: 'p10', name: 'Ravioli de Pato com Laranja', category: 'Principal', price: 0, description: 'Massa fresca de pato confitado com molho aveludado de laranja e vinho.' },
   { id: 'p11', name: 'Tortellini Cacio e Pepe com Camarão', category: 'Principal', price: 0, description: 'Molho romano de queijo e pimenta com camarões e raspas de limão.' },
@@ -55,7 +55,7 @@ const SEED_MENU: MenuItem[] = [
 
   // SOBREMESAS
   { id: 's1', name: 'Torta de Chocolate & Caramelo Salgado', category: 'Sobremesa', price: 0, description: 'Base de biscoito crocante, ganache meio amargo, caramelo toffee e flor de sal.' },
-  { id: 's2', name: 'Banoffee Especial da Casa', category: 'Sobremesa', price: 0, description: 'Base crocante, doce de leite argentino, bananas frescas e chantilly de verdade.' },
+  { id: 's2', name: 'Banoffee Especial da Casa', category: 'Sobremesa', price: 0, description: 'Base crocante, doce de leite, bananas frescas e chantilly de verdade.' },
   { id: 's3', name: 'Pudim Perfeito (Leite ou Pistache)', category: 'Sobremesa', price: 0, description: 'Textura super lisa e cremosa, sem furinhos. Versão tradicional ou pistache.' },
 ];
 
@@ -68,7 +68,7 @@ const SEED_ORDERS: Order[] = [
     time: '20:30',
     location: 'Tirol, Natal',
     guests: 12,
-    items: [SEED_MENU[0], SEED_MENU[1], SEED_MENU[15], SEED_MENU[19], SEED_MENU[22], SEED_MENU[32], SEED_MENU[35]],
+    items: [SEED_MENU[5], SEED_MENU[13], SEED_MENU[14]], // Focaccia, Camarão Fonduta, Filé Fonduta
     pricePerHead: 0,
     totalValue: 0,
     status: OrderStatus.CONFIRMED
@@ -107,28 +107,46 @@ export const addOrder = (order: Order) => {
   saveOrders(orders);
 };
 
+// Fixed Signature Items as requested by the user
+const SIGNATURE_ITEM_IDS = ['e6', 'e14', 'e15'];
+
 export const getTopFavorites = (limit: number = 3): MenuItem[] => {
+    const menu = getMenu();
+    // Prioritize signature items
+    const favorites = menu.filter(item => SIGNATURE_ITEM_IDS.includes(item.id));
+    
+    if (favorites.length >= limit) {
+        return favorites.slice(0, limit);
+    }
+    
+    // Fill the rest with popular items from orders if necessary
     const orders = getOrders();
     const itemCounts: Record<string, number> = {};
     const itemMap: Record<string, MenuItem> = {};
 
     orders.forEach(order => {
         order.items.forEach(item => {
-            itemCounts[item.id] = (itemCounts[item.id] || 0) + 1;
-            itemMap[item.id] = item;
+            if (!SIGNATURE_ITEM_IDS.includes(item.id)) {
+                itemCounts[item.id] = (itemCounts[item.id] || 0) + 1;
+                itemMap[item.id] = item;
+            }
         });
     });
 
-    const sortedIds = Object.entries(itemCounts)
+    const additionalIds = Object.entries(itemCounts)
         .sort(([, countA], [, countB]) => countB - countA)
-        .slice(0, limit)
         .map(([id]) => id);
 
-    const favorites = sortedIds.map(id => itemMap[id]).filter(Boolean);
-    
-    if (favorites.length === 0) {
-        return getMenu().slice(0, limit);
+    for (const id of additionalIds) {
+        if (favorites.length >= limit) break;
+        favorites.push(itemMap[id]);
+    }
+
+    // Fallback if still not enough
+    if (favorites.length < limit) {
+        const remaining = menu.filter(item => !favorites.find(f => f.id === item.id));
+        favorites.push(...remaining.slice(0, limit - favorites.length));
     }
     
-    return favorites;
+    return favorites.slice(0, limit);
 };

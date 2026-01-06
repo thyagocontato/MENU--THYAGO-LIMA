@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({ apiKey });
 export const generateMenuDescription = async (itemName: string, ingredients: string): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: `Escreva uma descrição apetitosa, curta e sofisticada para um menu de restaurante.
       Prato: ${itemName}
       Ingredientes principais: ${ingredients}
@@ -39,7 +39,7 @@ export const analyzeBusinessData = async (stats: BusinessStats): Promise<string>
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
     });
     // Check if text exists before returning

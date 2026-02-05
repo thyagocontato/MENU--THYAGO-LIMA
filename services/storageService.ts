@@ -1,12 +1,12 @@
 import { MenuItem, Order, OrderStatus } from '../types';
 
-const MENU_KEY = 'chefcontrol_menu_2026_v1';
-const ORDERS_KEY = 'chefcontrol_orders_2026_v1';
+const MENU_KEY = 'chefcontrol_menu_2026_v3';
+const ORDERS_KEY = 'chefcontrol_orders_2026_v3';
 
 const SEED_MENU: MenuItem[] = [
   // ENTRADAS - O Início (Frios e Leves)
   { id: 'e1', name: 'Ceviche de Peixe Branco', category: 'Entrada', price: 0, description: 'Marinado no leite de tigre de coco natural, cebola roxa, toque de limão e perfume de laranja Bahia.' },
-  { id: 'e2', name: 'Crudo de Atum', category: 'Entrada', price: 0, description: 'Cubos de atum vermelho fresco, mix de tomates selecionados, azeite de limão siciliano e flor de sal.' },
+  { id: 'e2', name: 'Crudo de Atum', category: 'Entrada', price: 0, description: 'Atum fresco em cubos, azeite de limão siciliano, flor de sal e crocante de massa uramaki.' },
   { id: 'e3', name: 'Tartare de Salmão & Filo', category: 'Entrada', price: 0, description: 'Salmão picado na ponta da faca, azeite e flor de sal. Servido com a crocância da massa filo.' },
   { id: 'e4', name: 'Carpaccio com Sorvete de Mostarda', category: 'Entrada', price: 0, description: 'Lâminas de carne, sorvete artesanal de mostarda, lascas de parmesão, alcaparras e azeite.' },
   { id: 'e5', name: 'Steak Tartare do Chef', category: 'Entrada', price: 0, description: 'Filé mignon, alcaparras, tabasco e mostarda. Acompanha creme azedo e massa filo crocante.' },
@@ -34,6 +34,7 @@ const SEED_MENU: MenuItem[] = [
   { id: 'p1', name: 'Salada de Salmão Maçaricado', category: 'Principal', price: 0, description: 'Folhas nobres, salmão maçaricado, tomate confit, crocante de sementes e molho cítrico.' },
   { id: 'p2', name: 'Salada Tropical de Camarão', category: 'Principal', price: 0, description: 'Camarões grelhados, manga, castanhas tostadas e vinagrete de limão siciliano com mel.' },
   { id: 'p3', name: 'Camarão & Arroz de Pistache', category: 'Principal', price: 0, description: 'Grelhados na manteiga de ervas com arroz soltinho de pistache e amêndoas.' },
+  { id: 'p16', name: 'Caesar Salad', category: 'Principal', price: 0, description: 'Alface romana, molho clássico, parmesão, croutons e peito de frango sous vide maçaricado.' },
   
   // PRATOS PRINCIPAIS - Risotos
   { id: 'p4', name: 'Risoto de Polvo & Limão Siciliano', category: 'Principal', price: 0, description: 'Toque cítrico com polvo na manteiga de páprica e azeite de manjericão.' },

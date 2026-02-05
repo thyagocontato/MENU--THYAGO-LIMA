@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MenuItem, Order, OrderStatus } from '../types';
 import { getMenu, addOrder, getTopFavorites } from '../services/storageService';
-import { Calendar, Users, MapPin, Clock, Check, ChevronRight, ChevronLeft, User, Phone, ShoppingBag, Utensils, Coffee, LockKeyhole, Star } from 'lucide-react';
+import { Calendar, Users, MapPin, Clock, Check, ChevronRight, ChevronLeft, User, Phone, ShoppingBag, Utensils, Coffee, LockKeyhole, Star, MessageSquare } from 'lucide-react';
 import { generateWhatsappMessage } from '../services/geminiService';
 
 interface ClientOrderFormProps {
@@ -21,6 +21,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     const [location, setLocation] = useState('');
     const [guests, setGuests] = useState<number | string>(2); 
     const [selectedItems, setSelectedItems] = useState<MenuItem[]>([]);
+    const [notes, setNotes] = useState('');
 
     useEffect(() => {
         setMenu(getMenu());
@@ -96,7 +97,8 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
             items: selectedItems,
             pricePerHead: 0,
             totalValue: 0,
-            status: OrderStatus.PENDING
+            status: OrderStatus.PENDING,
+            notes: notes
         };
 
         addOrder(newOrder);
@@ -115,6 +117,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
 *Minha Seleção 2026:*
 ${itemsList}
 
+${notes ? `*Observações:* ${notes}\n` : ''}
 Aguardo o orçamento detalhado. Obrigado!`;
 
         const encodedMsg = encodeURIComponent(message);
@@ -321,6 +324,23 @@ Aguardo o orçamento detalhado. Obrigado!`;
                         </div>
                     </div>
                 ))}
+
+                {/* Observações Section */}
+                <div className="mt-16 bg-white p-8 border border-secondary/20 shadow-lg relative">
+                    <div className="flex items-center gap-3 mb-6">
+                        <MessageSquare className="text-secondary" size={24} />
+                        <h3 className="text-2xl font-serif text-primary font-bold">Observações do Menu</h3>
+                    </div>
+                    <p className="text-gray-500 text-sm font-serif italic mb-4">
+                        Deseja informar restrições alimentares, alergias ou algum pedido especial para o Chef?
+                    </p>
+                    <textarea 
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="w-full p-4 bg-cream/30 border border-secondary/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-gray-800 font-sans min-h-[120px] transition-all"
+                        placeholder="Ex: 2 convidados vegetarianos, alergia a frutos do mar, etc..."
+                    />
+                </div>
             </div>
         );
     };
@@ -372,6 +392,15 @@ Aguardo o orçamento detalhado. Obrigado!`;
                             })}
                         </div>
                     </div>
+
+                    {notes && (
+                        <div className="border-t border-secondary/10 pt-8">
+                            <h3 className="text-[10px] font-bold text-secondary uppercase tracking-[0.3em] mb-4 text-center">Observações Especiais</h3>
+                            <div className="bg-cream/20 p-4 border border-secondary/10 text-center italic text-gray-700 font-serif">
+                                "{notes}"
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div className="h-2 bg-secondary w-full"></div>
             </div>

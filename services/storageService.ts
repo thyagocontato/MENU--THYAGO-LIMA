@@ -17,7 +17,7 @@ const SEED_MENU: MenuItem[] = [
   { id: 'e8', name: 'Robata de Filé Glaceada', category: 'Entrada', price: 0, description: 'Cubos de filé mignon grelhados com blend exclusivo de molho de ostra e mostarda.' },
   { id: 'e9', name: 'Polvo & Páprica', category: 'Entrada', price: 0, description: 'Tentáculo de polvo macio, batatas douradas e maionese defumada de páprica.' },
   { id: 'e10', name: 'Milho Tostado Trufado', category: 'Entrada', price: 0, description: 'Milho doce grelhado na manteiga sobre creme de queijo suave e azeite de trufas.' },
-  { id: 'e11', name: 'Bacalhau Gratinado', category: 'Entrada', price: 0, description: 'Creme rico e aveludado de bacalhau gratinado ao forno. Servido com pão artesanal.' },
+  { id: 'e11', name: 'Bacalhau Espiritual', category: 'Entrada', price: 0, description: 'Creme rico e aveludado de bacalhau gratinado ao forno. Servido com pão artesanal.' },
   { id: 'e12', name: 'Bacalhau Confitado (Sous-vide)', category: 'Entrada', price: 0, description: 'Lombos de bacalhau em azeite aromático e azeitona roxa, cozidos em baixa temperatura.' },
   { id: 'e13', name: 'Maminha de Lenta Cocção', category: 'Entrada', price: 0, description: 'Corte nobre em baixa temperatura, extremamente suculento, com delicado molho roti.' },
   { id: 'e14', name: 'Camarão na Fonduta de Sálvia', category: 'Entrada', price: 0, description: 'Camarões grelhados na sálvia em creme de parmesão. Acompanha focaccia.' },

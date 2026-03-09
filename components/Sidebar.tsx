@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, UtensilsCrossed, ClipboardList, ChefHat, LogOut, FileBarChart } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ClipboardList, ChefHat, LogOut, FileBarChart, Instagram } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -14,6 +14,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onClientMode
     { id: 'reports', label: 'Relatórios', icon: FileBarChart },
     { id: 'menu', label: 'Cardápio', icon: UtensilsCrossed },
   ];
+
+  const instagramUrl = "https://www.instagram.com/thyagolimachef/";
 
   return (
     <div className="w-20 lg:w-64 bg-primary text-white flex flex-col h-screen fixed left-0 top-0 z-20 transition-all duration-300 shadow-xl border-r border-secondary/20">
@@ -46,6 +48,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onClientMode
             </button>
           );
         })}
+        
+        <a 
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center lg:justify-start gap-4 p-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all duration-200"
+        >
+            <Instagram className="w-5 h-5" />
+            <span className="hidden lg:block">Instagram</span>
+        </a>
       </nav>
 
       <div className="p-4 border-t border-secondary/30">

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { getLocalDate } from '../utils';
 import { getOrders } from '../services/storageService';
 import { Order, MenuItem } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -13,7 +14,7 @@ const Reports: React.FC = () => {
         const items: Record<string, number> = {};
 
         orders.forEach(order => {
-            const date = new Date(order.date);
+            const date = getLocalDate(order.date);
             let key = '';
             let name = '';
 
@@ -79,7 +80,7 @@ const Reports: React.FC = () => {
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                             <XAxis dataKey="name" tick={{fontSize: 12}} />
                             <YAxis tickFormatter={(val) => `R$${val}`} />
-                            <Tooltip formatter={(val: number) => `R$ ${val.toFixed(2)}`} />
+                            <Tooltip formatter={(val: any) => `R$ ${Number(val).toFixed(2)}`} />
                             <Bar dataKey="revenue" fill="#0B2B26" radius={[4, 4, 0, 0]} name="Faturamento" />
                         </BarChart>
                     </ResponsiveContainer>

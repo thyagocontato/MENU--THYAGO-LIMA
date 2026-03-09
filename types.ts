@@ -26,6 +26,7 @@ export interface Order {
   totalValue: number;
   status: OrderStatus;
   notes?: string;
+  waiterService?: boolean;
 }
 
 export interface BusinessStats {

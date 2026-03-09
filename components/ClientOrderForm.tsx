@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { formatDisplayDate } from '../utils';
 import { MenuItem, Order, OrderStatus } from '../types';
 import { getMenu, addOrder, getTopFavorites } from '../services/storageService';
-import { Calendar, Users, MapPin, Clock, Check, ChevronRight, ChevronLeft, User, Phone, ShoppingBag, Utensils, Coffee, LockKeyhole, Star, MessageSquare } from 'lucide-react';
+import { Calendar, Users, MapPin, Clock, Check, ChevronRight, ChevronLeft, User, Phone, ShoppingBag, Utensils, Coffee, LockKeyhole, Star, MessageSquare, Instagram } from 'lucide-react';
 import { generateWhatsappMessage } from '../services/geminiService';
 
 interface ClientOrderFormProps {
@@ -22,6 +23,7 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     const [guests, setGuests] = useState<number | string>(2); 
     const [selectedItems, setSelectedItems] = useState<MenuItem[]>([]);
     const [notes, setNotes] = useState('');
+    const [waiterService, setWaiterService] = useState(true);
 
     useEffect(() => {
         setMenu(getMenu());
@@ -98,7 +100,8 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
             pricePerHead: 0,
             totalValue: 0,
             status: OrderStatus.PENDING,
-            notes: notes
+            notes: notes,
+            waiterService: waiterService
         };
 
         addOrder(newOrder);
@@ -110,9 +113,10 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
         
 *Nome:* ${clientName}
 *Contato:* ${clientPhone}
-*Data:* ${new Date(date).toLocaleDateString()} às ${time}
+*Data:* ${formatDisplayDate(date)} às ${time}
 *Local:* ${location}
 *Convidados:* ${finalGuests} pessoas
+${waiterService ? '*Serviço de Garçom:* Sim (Taxa R$ 120,00 - referente a 1 garçom)\n' : ''}
 
 *Minha Seleção 2026:*
 ${itemsList}
@@ -325,6 +329,47 @@ Aguardo o orçamento detalhado. Obrigado!`;
                     </div>
                 ))}
 
+                {/* Serviço de Garçom Section */}
+                <div className="mt-12 bg-white p-8 border border-secondary/20 shadow-lg relative">
+                    <label className="flex items-center gap-4 cursor-pointer group">
+                        <div className="relative">
+                            <input 
+                                type="checkbox" 
+                                checked={waiterService}
+                                onChange={(e) => setWaiterService(e.target.checked)}
+                                className="sr-only"
+                            />
+                            <div className={`w-14 h-7 rounded-full transition-colors duration-300 ${waiterService ? 'bg-primary' : 'bg-gray-300'}`}></div>
+                            <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${waiterService ? 'translate-x-7' : ''} shadow-sm`}></div>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-primary font-bold font-serif text-xl">Deseja Serviço de Garçom?</span>
+                            <span className="text-sm text-secondary font-sans uppercase tracking-widest mt-1">Taxa de R$ 120,00 (referente a 1 garçom)</span>
+                        </div>
+                    </label>
+                    <p className="mt-4 text-gray-500 text-sm font-serif italic">
+                        Caso seu evento necessite de mais profissionais, favor informar nas observações abaixo.
+                    </p>
+                </div>
+
+                {/* Informações Importantes Section */}
+                <div className="mt-12 bg-white p-8 border border-secondary/20 shadow-lg relative">
+                    <div className="flex items-center gap-3 mb-6">
+                        <LockKeyhole className="text-secondary" size={20} />
+                        <h3 className="text-xl font-serif text-primary font-bold uppercase tracking-widest">Informações Importantes</h3>
+                    </div>
+                    <div className="space-y-4 font-serif italic text-gray-700">
+                        <div className="flex items-start gap-3">
+                            <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 shrink-0"></div>
+                            <p><span className="font-bold text-primary not-italic">Bebidas:</span> não fornecemos bebidas.</p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 shrink-0"></div>
+                            <p><span className="font-bold text-primary not-italic">Cutelaria:</span> disponibilizamos utensílios necessários para as entradas.</p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Observações Section */}
                 <div className="mt-16 bg-white p-8 border border-secondary/20 shadow-lg relative">
                     <div className="flex items-center gap-3 mb-6">
@@ -363,9 +408,10 @@ Aguardo o orçamento detalhado. Obrigado!`;
                         
                         <div className="grid grid-cols-1 gap-3 font-serif text-dark">
                             <div className="text-xl font-bold">{clientName}</div>
-                            <div className="text-lg text-gray-500">{new Date(date).toLocaleDateString()} às {time}</div>
+                            <div className="text-lg text-gray-500">{formatDisplayDate(date)} às {time}</div>
                             <div className="text-lg text-gray-500">{location}</div>
                             <div className="text-lg text-gray-500">{guests} Convidados</div>
+                            {waiterService && <div className="text-lg text-primary font-bold italic">Com Serviço de Garçom (R$ 120,00)</div>}
                         </div>
                     </div>
 
@@ -401,6 +447,13 @@ Aguardo o orçamento detalhado. Obrigado!`;
                             </div>
                         </div>
                     )}
+
+                    <div className="border-t border-secondary/10 pt-8 text-center">
+                        <div className="space-y-2 text-[10px] text-secondary font-sans uppercase tracking-widest">
+                            <p>• Bebidas: não fornecemos bebidas</p>
+                            <p>• Cutelaria: disponibilizamos utensílios para as entradas</p>
+                        </div>
+                    </div>
                 </div>
                 <div className="h-2 bg-secondary w-full"></div>
             </div>
@@ -421,6 +474,15 @@ Aguardo o orçamento detalhado. Obrigado!`;
                     <p className="text-secondary/80 text-xs md:text-sm font-light tracking-[0.4em] uppercase mt-2">
                         Gastronomia Exclusiva • 2026
                     </p>
+                    <a 
+                        href="https://www.instagram.com/thyagolimachef/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-secondary/60 hover:text-secondary transition-colors mt-6 text-xs tracking-widest uppercase group"
+                    >
+                        <Instagram size={16} className="group-hover:scale-110 transition-transform" />
+                        @thyagolimachef
+                    </a>
                 </div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-secondary/10 rounded-full z-0"></div>
             </header>
@@ -440,6 +502,21 @@ Aguardo o orçamento detalhado. Obrigado!`;
                     {step === 3 && renderStep3()}
                 </div>
             </main>
+
+            <footer className="pb-32 pt-10 px-6 text-center">
+                <div className="max-w-4xl mx-auto border-t border-secondary/10 pt-10">
+                    <p className="text-primary font-serif italic text-sm mb-4">Acompanhe meu trabalho diário</p>
+                    <a 
+                        href="https://www.instagram.com/thyagolimachef/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 bg-white px-6 py-3 border border-secondary/20 shadow-sm hover:shadow-md transition-all group"
+                    >
+                        <Instagram size={20} className="text-secondary group-hover:scale-110 transition-transform" />
+                        <span className="text-primary font-bold tracking-widest uppercase text-xs">Instagram @thyagolimachef</span>
+                    </a>
+                </div>
+            </footer>
 
             <div className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-secondary/20 p-5 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] z-50">
                 <div className="max-w-3xl mx-auto flex gap-4">

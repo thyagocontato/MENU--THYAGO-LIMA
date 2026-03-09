@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatDisplayDate } from '../utils';
 import { MenuItem, Order, OrderStatus } from '../types';
 import { getMenu, getOrders, saveOrders } from '../services/storageService';
 import { Calendar, Clock, MapPin, User, Users, Smartphone, Plus, Check, MessageCircle, X, AlertCircle } from 'lucide-react';
@@ -17,6 +18,7 @@ const OrderManager: React.FC = () => {
     const [time, setTime] = useState('');
     const [location, setLocation] = useState('');
     const [guests, setGuests] = useState(1);
+    const [waiterService, setWaiterService] = useState(true);
     // Removed pricePerHead state as requested
     const [selectedItems, setSelectedItems] = useState<MenuItem[]>([]);
     
@@ -61,7 +63,8 @@ const OrderManager: React.FC = () => {
             items: selectedItems,
             pricePerHead: 0, // Set to 0 as pricing is disabled for now
             totalValue: 0,   // Set to 0 as pricing is disabled for now
-            status: OrderStatus.PENDING
+            status: OrderStatus.PENDING,
+            waiterService: waiterService
         };
 
         const updatedOrders = [newOrder, ...orders];
@@ -78,6 +81,7 @@ const OrderManager: React.FC = () => {
         setTime('');
         setLocation('');
         setGuests(1);
+        setWaiterService(true);
         setSelectedItems([]);
     }
 
@@ -147,6 +151,12 @@ const OrderManager: React.FC = () => {
                                 <div className="col-span-2">
                                     <label className="text-xs text-gray-500">Qtd. Convidados</label>
                                     <input type="number" value={guests} onChange={e => setGuests(parseInt(e.target.value) || 0)} className="w-full border p-2 rounded focus:ring-primary focus:ring-1 outline-none" />
+                                </div>
+                                <div className="col-span-2 pt-2">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked={waiterService} onChange={e => setWaiterService(e.target.checked)} className="w-4 h-4 accent-primary" />
+                                        <span className="text-sm font-medium text-gray-700">Serviço de Garçom (R$ 120,00)</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -303,7 +313,7 @@ const OrderManager: React.FC = () => {
                             
                             <div className="space-y-2 mb-4">
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <Calendar className="w-4 h-4 text-primary" /> {new Date(order.date).toLocaleDateString()}
+                                    <Calendar className="w-4 h-4 text-primary" /> {formatDisplayDate(order.date)}
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
                                     <Clock className="w-4 h-4 text-primary" /> {order.time}
@@ -314,6 +324,11 @@ const OrderManager: React.FC = () => {
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
                                     <Users className="w-4 h-4 text-primary" /> {order.guests} pessoas
                                 </div>
+                                {order.waiterService && (
+                                    <div className="flex items-center gap-2 text-sm text-primary font-bold">
+                                        <Check className="w-4 h-4" /> Com Garçom (R$ 120,00)
+                                    </div>
+                                )}
                             </div>
 
                             <div className="border-t border-gray-100 pt-3 flex justify-between items-center bg-gray-50 -mx-5 -mb-5 p-4 rounded-b-xl mt-4">

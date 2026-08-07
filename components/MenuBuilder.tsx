@@ -14,6 +14,7 @@ const MenuBuilder: React.FC = () => {
   const [newPrice, setNewPrice] = useState('');
   const [newIngredients, setNewIngredients] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [newIsPremium, setNewIsPremium] = useState(false);
 
   useEffect(() => {
     setMenuItems(getMenu());
@@ -42,6 +43,7 @@ const MenuBuilder: React.FC = () => {
       category: newCategory,
       price: newPrice ? parseFloat(newPrice) : 0,
       description: newDescription || newIngredients,
+      isPremium: newIsPremium,
     };
 
     const updatedMenu = [...menuItems, newItem];
@@ -54,6 +56,13 @@ const MenuBuilder: React.FC = () => {
     setNewPrice('');
     setNewIngredients('');
     setNewDescription('');
+    setNewIsPremium(false);
+  };
+
+  const handleTogglePremium = (id: string) => {
+    const updated = menuItems.map(i => i.id === id ? { ...i, isPremium: !i.isPremium } : i);
+    setMenuItems(updated);
+    saveMenu(updated);
   };
 
   const handleDeleteItem = (id: string) => {
@@ -143,6 +152,20 @@ const MenuBuilder: React.FC = () => {
               />
             </div>
 
+            <div className="flex items-center gap-2 pt-1">
+              <input 
+                type="checkbox"
+                id="isPremiumCheck"
+                checked={newIsPremium}
+                onChange={(e) => setNewIsPremium(e.target.checked)}
+                className="w-4 h-4 text-amber-600 rounded border-gray-300 focus:ring-amber-500 cursor-pointer"
+              />
+              <label htmlFor="isPremiumCheck" className="text-sm font-medium text-gray-700 cursor-pointer flex items-center gap-1">
+                <Sparkles size={14} className="text-amber-500 fill-amber-500" />
+                Marcar como <strong className="text-amber-800 font-semibold">Seleção Premium</strong>
+              </label>
+            </div>
+
             <button 
               onClick={handleAddItem}
               className="w-full bg-secondary text-white py-2 rounded-lg hover:bg-gray-700 transition flex items-center justify-center gap-2 font-medium"
@@ -160,6 +183,7 @@ const MenuBuilder: React.FC = () => {
                     <tr>
                         <th className="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Prato</th>
                         <th className="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Categoria</th>
+                        <th className="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Selo</th>
                         <th className="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Descrição</th>
                         <th className="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
                     </tr>
@@ -167,7 +191,7 @@ const MenuBuilder: React.FC = () => {
                 <tbody className="divide-y divide-gray-100">
                     {menuItems.length === 0 ? (
                         <tr>
-                            <td colSpan={4} className="p-8 text-center text-gray-500">
+                            <td colSpan={5} className="p-8 text-center text-gray-500">
                                 Nenhum item no cardápio. Adicione um item ao lado.
                             </td>
                         </tr>
@@ -181,6 +205,20 @@ const MenuBuilder: React.FC = () => {
                                     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                         {item.category}
                                     </span>
+                                </td>
+                                <td className="p-4">
+                                    <button
+                                        onClick={() => handleTogglePremium(item.id)}
+                                        className={`px-2 py-1 text-[11px] font-bold rounded uppercase tracking-wider transition flex items-center gap-1 border ${
+                                            item.isPremium 
+                                                ? 'bg-amber-100 text-amber-900 border-amber-300' 
+                                                : 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200'
+                                        }`}
+                                        title="Clique para alternar o selo Premium"
+                                    >
+                                        <Sparkles size={12} className={item.isPremium ? 'fill-amber-600 text-amber-600' : 'text-gray-400'} />
+                                        {item.isPremium ? 'Premium' : 'Normal'}
+                                    </button>
                                 </td>
                                 <td className="p-4 text-xs text-gray-600 max-w-xs">{item.description}</td>
                                 <td className="p-4 text-right">

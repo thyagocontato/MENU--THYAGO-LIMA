@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { formatDisplayDate } from '../utils';
 import { MenuItem, Order, OrderStatus } from '../types';
 import { getMenu, getOrders, saveOrders } from '../services/storageService';
-import { Calendar, Clock, MapPin, User, Users, Smartphone, Plus, Check, MessageCircle, X, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Users, Smartphone, Plus, Check, MessageCircle, X, AlertCircle, FileText } from 'lucide-react';
 import { generateWhatsappMessage } from '../services/geminiService';
+import ProposalModal from './ProposalModal';
 
 const OrderManager: React.FC = () => {
     const [view, setView] = useState<'list' | 'new'>('list');
     const [orders, setOrders] = useState<Order[]>([]);
     const [menu, setMenu] = useState<MenuItem[]>([]);
     const [filter, setFilter] = useState('All');
+    const [selectedOrderForProposal, setSelectedOrderForProposal] = useState<Order | null>(null);
 
     // New Order State
     const [clientName, setClientName] = useState('');
@@ -110,6 +112,12 @@ const OrderManager: React.FC = () => {
         window.open(`https://wa.me/${cleanNumber}?text=${text}`, '_blank');
         setShowWhatsappModal(false);
     }
+
+    const handleUpdateOrder = (updatedOrder: Order) => {
+        const updatedList = orders.map(o => o.id === updatedOrder.id ? updatedOrder : o);
+        setOrders(updatedList);
+        setSelectedOrderForProposal(updatedOrder);
+    };
 
     const filteredOrders = filter === 'All' ? orders : orders.filter(o => o.status === filter);
     const counts = getSelectionCounts();
@@ -331,16 +339,34 @@ const OrderManager: React.FC = () => {
                                 )}
                             </div>
 
-                            <div className="border-t border-gray-100 pt-3 flex justify-between items-center bg-gray-50 -mx-5 -mb-5 p-4 rounded-b-xl mt-4">
-                                <span className="text-gray-500 text-xs font-medium">{order.items.length} itens no menu</span>
-                                <div className="text-right">
-                                    <span className="font-bold text-xs text-gray-400">Orçamento sob consulta</span>
+                            <div className="border-t border-gray-100 pt-3 flex flex-col gap-2 bg-gray-50 -mx-5 -mb-5 p-4 rounded-b-xl mt-4">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-gray-500 font-medium">{order.items.length} itens no menu</span>
+                                    <span className="font-bold text-primary">
+                                        {order.totalValue > 0 ? `R$ ${order.totalValue.toFixed(2)}` : 'Orçamento sob consulta'}
+                                    </span>
                                 </div>
+
+                                <button
+                                    onClick={() => setSelectedOrderForProposal(order)}
+                                    className="w-full mt-1 bg-primary hover:bg-secondary text-secondary hover:text-primary border border-secondary/30 font-bold py-2 px-3 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm"
+                                >
+                                    <FileText className="w-4 h-4" /> Gerar Proposta PDF
+                                </button>
                             </div>
                         </div>
                     ))
                 )}
             </div>
+
+            {/* Proposal Modal */}
+            {selectedOrderForProposal && (
+                <ProposalModal
+                    order={selectedOrderForProposal}
+                    onClose={() => setSelectedOrderForProposal(null)}
+                    onUpdateOrder={handleUpdateOrder}
+                />
+            )}
         </div>
     );
 };

@@ -11,6 +11,7 @@ export interface MenuItem {
   category: string;
   price: number;
   description: string;
+  isPremium?: boolean;
 }
 
 export interface Order {

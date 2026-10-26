@@ -163,7 +163,7 @@ const OrderManager: React.FC = () => {
                                 <div className="col-span-2 pt-2">
                                     <label className="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" checked={waiterService} onChange={e => setWaiterService(e.target.checked)} className="w-4 h-4 accent-primary" />
-                                        <span className="text-sm font-medium text-gray-700">Serviço de Garçom (R$ 120,00)</span>
+                                        <span className="text-sm font-medium text-gray-700">Serviço de Garçom (R$ 140,00)</span>
                                     </label>
                                 </div>
                             </div>

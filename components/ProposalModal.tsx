@@ -17,7 +17,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ order, onClose, onUpdateO
     const [customNote, setCustomNote] = useState<string>(order.notes || '');
     const [isSaved, setIsSaved] = useState<boolean>(false);
 
-    const waiterFee = order.waiterService ? 120 : 0;
+    const waiterFee = order.waiterService ? 140 : 0;
     const menuTotal = (pricePerHead || 0) * (order.guests || 1);
     const grandTotal = menuTotal + waiterFee;
 
@@ -77,7 +77,7 @@ Cliente: ${order.clientName}
 *MENU SELECIONADO:*
 ${itemsSummary}
 
-${order.waiterService ? '🍷 *Serviço de Garçom:* Sim (R$ 120,00 - 1 profissional)\n' : ''}
+${order.waiterService ? '🍷 *Serviço de Garçom:* Sim (R$ 140,00 - 1 profissional)\n' : ''}
 *INVESTIMENTO:*
 ${pricePerHead > 0 ? `• Gastronomia: R$ ${pricePerHead.toFixed(2)} / pessoa (R$ ${menuTotal.toFixed(2)})\n` : ''}${waiterFee > 0 ? `• Taxa de Garçom: R$ ${waiterFee.toFixed(2)}\n` : ''}*TOTAL ESTIMADO:* R$ ${grandTotal.toFixed(2)}
 
@@ -342,8 +342,8 @@ Chef Thyago Lima • @thyagolimachef`;
                                             <p className="text-[10px] text-gray-500 font-normal">Atendimento dedicado para suporte ao evento</p>
                                         </td>
                                         <td className="p-3 text-center">1 profissional</td>
-                                        <td className="p-3 text-right">R$ 120,00</td>
-                                        <td className="p-3 text-right font-bold text-gray-800">R$ 120,00</td>
+                                        <td className="p-3 text-right">R$ 140,00</td>
+                                        <td className="p-3 text-right font-bold text-gray-800">R$ 140,00</td>
                                     </tr>
                                 )}
                             </tbody>

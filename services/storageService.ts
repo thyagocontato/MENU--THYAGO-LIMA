@@ -1,7 +1,7 @@
 import { MenuItem, Order, OrderStatus } from '../types';
 
-const MENU_KEY = 'chefcontrol_menu_2026_v5';
-const ORDERS_KEY = 'chefcontrol_orders_2026_v5';
+const MENU_KEY = 'chefcontrol_menu_2026_v6';
+const ORDERS_KEY = 'chefcontrol_orders_2026_v6';
 
 const SEED_MENU: MenuItem[] = [
   // ENTRADAS - O Início (Frios e Leves)
@@ -43,19 +43,19 @@ const SEED_MENU: MenuItem[] = [
   { id: 'p7', name: 'Cauda de Lagosta & Fettuccine', category: 'Principal', price: 0, description: 'Lagosta grelhada na casca sobre fettuccine ao molho rústico de tomates assados.', isPremium: true },
   { id: 'p8', name: 'Ravioli de Búfala & Camarão', category: 'Principal', price: 0, description: 'Massa recheada com búfala, molho rústico, manjericão e camarões grelhados.' },
   { id: 'p9', name: 'Ravioli de Pera, Ricota & Camarão', category: 'Principal', price: 0, description: 'Massa de pera e ricota com camarões e manteiga noisette de amêndoas.' },
-  { id: 'p10', name: 'Ravioli de Pato com Laranja', category: 'Principal', price: 0, description: 'Massa fresca de pato confitado com molho aveludado de laranja e vinho.', isPremium: true },
+  { id: 'p10', name: 'Ravioli de Pato com Laranja', category: 'Principal', price: 0, description: 'Massa fresca de pato confitado com molho aveludado de laranja e abobora.', isPremium: true },
   { id: 'p11', name: 'Tortellini Cacio e Pepe com Camarão', category: 'Principal', price: 0, description: 'Molho romano de queijo e pimenta com camarões e raspas de limão.' },
 
   // PRATOS PRINCIPAIS - Carnes
   { id: 'p12', name: 'Stinco de Cordeiro & Gnocchi', category: 'Principal', price: 0, description: 'Cozido lentamente com o próprio molho reduzido e gnocchi dourado na manteiga.', isPremium: true },
-  { id: 'p13', name: 'Carré de Cordeiro & Baroa', category: 'Principal', price: 0, description: 'Ponto rosado com gnocchi artesanal de batata baroa e ervas frescas.', isPremium: true },
+  { id: 'p13', name: 'Carré de Cordeiro & Baroa', category: 'Principal', price: 0, description: 'Ponto rosado com gnocchi artesanal e ervas frescas.', isPremium: true },
   { id: 'p14', name: 'Filé ao Funghi & Gnocchi', category: 'Principal', price: 0, description: 'Medalhão grelhado ao molho de cogumelos e vinho tinto com gnocchi artesanal.' },
-  { id: 'p15', name: 'Saltimbocca com Fettuccine', category: 'Principal', price: 0, description: 'Escalopes com sálvia e presunto cru sobre fettuccine artesanal na manteiga.' },
 
   // SOBREMESAS
   { id: 's1', name: 'Torta de Chocolate & Caramelo Salgado', category: 'Sobremesa', price: 0, description: 'Base de biscoito crocante, ganache meio amargo, caramelo toffee e flor de sal.' },
   { id: 's2', name: 'Banoffee Especial da Casa', category: 'Sobremesa', price: 0, description: 'Base crocante, doce de leite, bananas frescas e chantilly de verdade.' },
-  { id: 's3', name: 'Pudim Perfeito (Leite ou Pistache)', category: 'Sobremesa', price: 0, description: 'Textura super lisa e cremosa, sem furinhos. Versão tradicional ou pistache.' },
+  { id: 's3', name: 'Pudim Perfeito (Leite)', category: 'Sobremesa', price: 0, description: 'Textura super lisa e cremosa, sem furinhos. Versão tradicional ou pistache.' },
+  { id: 's4', name: 'Pudim Perfeito Pistache', category: 'Sobremesa', price: 0, description: 'Textura super lisa e cremosa, sem furinhos. Versão pistache.' },
 ];
 
 const SEED_ORDERS: Order[] = [

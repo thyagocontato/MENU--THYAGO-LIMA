@@ -52,20 +52,20 @@ export const analyzeBusinessData = async (stats: BusinessStats): Promise<string>
 
 export const generateWhatsappMessage = async (orderItems: MenuItem[]): Promise<string> => {
     try {
-        const entradas = orderItems.filter(i => i.category === 'Entrada').map(i => `- ${i.name}`).join('\n');
-        const principais = orderItems.filter(i => i.category === 'Principal').map(i => `- ${i.name}`).join('\n');
-        const sobremesas = orderItems.filter(i => i.category === 'Sobremesa').map(i => `- ${i.name}`).join('\n');
+        const formatItem = (i: MenuItem) => i.isPremium ? `• ${i.name} ⭐ (Seleção Premium)` : `• ${i.name}`;
 
-        const baseText = `
-🍴 *Entradas:*
+        const entradas = orderItems.filter(i => i.category === 'Entrada').map(formatItem).join('\n');
+        const principais = orderItems.filter(i => i.category === 'Principal').map(formatItem).join('\n');
+        const sobremesas = orderItems.filter(i => i.category === 'Sobremesa').map(formatItem).join('\n');
+
+        const baseText = `*Entradas:*
 ${entradas || '(Nenhuma selecionada)'}
 
-🍽️ *Pratos Principais:*
+*Pratos Principais:*
 ${principais || '(Nenhum selecionado)'}
 
-🍰 *Sobremesa:*
-${sobremesas || '(Nenhuma selecionada)'}
-`;
+*Sobremesa:*
+${sobremesas || '(Nenhuma selecionada)'}`;
         return baseText.trim();
 
     } catch (error) {

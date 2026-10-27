@@ -29,6 +29,14 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     const [msg2Text, setMsg2Text] = useState('');
     const [copied1, setCopied1] = useState(false);
     const [copied2, setCopied2] = useState(false);
+    const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
+
+    const showNotice = (msg: string) => {
+        setNoticeMessage(msg);
+        setTimeout(() => {
+            setNoticeMessage(prev => prev === msg ? null : prev);
+        }, 5000);
+    };
 
     const chefPhone = "5584996271047";
 
@@ -48,15 +56,15 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
 
         if (!isSelected) {
             if (item.category === 'Entrada' && counts.entradas >= 4) {
-                alert("O cardápio 2026 prevê 4 opções de entrada. Por favor, remova uma para selecionar esta.");
+                showNotice("O cardápio 2026 prevê até 4 opções de entrada. Remova uma para adicionar esta.");
                 return;
             }
             if (item.category === 'Principal' && counts.principais >= 2) {
-                alert("Selecione até 2 pratos principais para compor seu menu.");
+                showNotice("Selecione até 2 pratos principais para compor seu menu.");
                 return;
             }
             if (item.category === 'Sobremesa' && counts.sobremesas >= 1) {
-                alert("O menu inclui 1 opção de sobremesa.");
+                showNotice("O menu inclui 1 opção de sobremesa.");
                 return;
             }
             setSelectedItems([...selectedItems, item]);
@@ -88,22 +96,30 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     const triggerBothMessages = (m1: string, m2: string) => {
         const url1 = `https://api.whatsapp.com/send?phone=${chefPhone}&text=${encodeURIComponent(m1)}`;
         const url2 = `https://api.whatsapp.com/send?phone=${chefPhone}&text=${encodeURIComponent(m2)}`;
-        window.open(url1, '_blank');
-        setTimeout(() => {
-            window.open(url2, '_blank');
-        }, 400);
+        try {
+            window.open(url1, '_blank');
+            setTimeout(() => {
+                try {
+                    window.open(url2, '_blank');
+                } catch {
+                    // handled by modal
+                }
+            }, 400);
+        } catch {
+            // handled by modal
+        }
     };
 
     const handleFinalize = async () => {
         const finalGuests = typeof guests === 'string' ? parseInt(guests) || 0 : guests;
 
         if (!clientName || !clientPhone || !date || !time || !location || !finalGuests) {
-            alert("Por favor, preencha todas as informações do evento (Nome, WhatsApp, Data, Horário, Local e Qtd. de Convidados).");
+            showNotice("Por favor, preencha todas as informações do evento (Nome, WhatsApp, Data, Horário, Local e Convidados).");
             return;
         }
 
         if (selectedItems.length === 0) {
-            alert("Por favor, selecione ao menos um item do menu para o seu evento.");
+            showNotice("Por favor, selecione ao menos um item do menu para o seu evento.");
             return;
         }
 
@@ -112,11 +128,6 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
             principais: selectedItems.filter(i => i.category === 'Principal').length,
             sobremesas: selectedItems.filter(i => i.category === 'Sobremesa').length
         };
-
-        if (counts.entradas === 0 || counts.principais === 0 || counts.sobremesas === 0) {
-            const confirm = window.confirm("Para uma experiência completa Thyago Lima, recomendamos selecionar Entradas, Principal e Sobremesa. Deseja enviar sua solicitação assim mesmo?");
-            if (!confirm) return;
-        }
 
         const newOrder: Order = {
             id: Date.now().toString(),
@@ -174,7 +185,23 @@ ${notesLine}Aguardo o orçamento detalhado. Obrigado!`;
     };
 
     return (
-        <div className="min-h-screen bg-cream text-dark font-sans flex flex-col">
+        <div className="min-h-screen bg-cream text-dark font-sans flex flex-col relative">
+            {/* Elegant Floating Notification */}
+            {noticeMessage && (
+                <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92%] bg-[#0B2B26] text-white px-5 py-4 shadow-2xl border-2 border-secondary flex items-start gap-3 animate-fade-in">
+                    <Sparkles className="text-secondary shrink-0 mt-0.5" size={18} />
+                    <p className="text-xs md:text-sm font-sans flex-1 leading-relaxed text-secondary/95">
+                        {noticeMessage}
+                    </p>
+                    <button 
+                        onClick={() => setNoticeMessage(null)} 
+                        className="text-secondary/70 hover:text-secondary shrink-0 p-1"
+                        aria-label="Fechar"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
             {/* Header */}
             <header className="bg-primary pt-12 pb-20 px-6 shadow-2xl relative overflow-hidden z-20">
                 <div className="max-w-4xl mx-auto text-center relative z-10">

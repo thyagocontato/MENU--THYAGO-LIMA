@@ -23,12 +23,10 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
     const [notes, setNotes] = useState('');
     const [waiterService, setWaiterService] = useState(true);
 
-    // 2-Message WhatsApp Modal State
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [msg1Text, setMsg1Text] = useState('');
-    const [msg2Text, setMsg2Text] = useState('');
-    const [copied1, setCopied1] = useState(false);
-    const [copied2, setCopied2] = useState(false);
+    // Finalized Order State (Direct WhatsApp Dispatch)
+    const [orderSent, setOrderSent] = useState(false);
+    const [sentMessageText, setSentMessageText] = useState('');
+    const [copied, setCopied] = useState(false);
     const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
 
     const showNotice = (msg: string) => {
@@ -73,47 +71,28 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
         }
     };
 
-    const handleCopy = async (text: string, isFirst: boolean) => {
+    const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
-            if (isFirst) {
-                setCopied1(true);
-                setTimeout(() => setCopied1(false), 2200);
-            } else {
-                setCopied2(true);
-                setTimeout(() => setCopied2(false), 2200);
-            }
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
         } catch {
-            // fallback if clipboard API not available
+            // fallback
         }
     };
 
-    const openWhatsAppMessage = (text: string) => {
+    const openWhatsAppDirect = (text: string) => {
         const url = `https://api.whatsapp.com/send?phone=${chefPhone}&text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
-    };
-
-    const triggerBothMessages = (m1: string, m2: string) => {
-        const url1 = `https://api.whatsapp.com/send?phone=${chefPhone}&text=${encodeURIComponent(m1)}`;
-        const url2 = `https://api.whatsapp.com/send?phone=${chefPhone}&text=${encodeURIComponent(m2)}`;
-        try {
-            window.open(url1, '_blank');
-            setTimeout(() => {
-                try {
-                    window.open(url2, '_blank');
-                } catch {
-                    // handled by modal
-                }
-            }, 400);
-        } catch {
-            // handled by modal
+        const win = window.open(url, '_blank');
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+            window.location.href = url;
         }
     };
 
-    const handleFinalize = async () => {
+    const handleFinalize = () => {
         const finalGuests = typeof guests === 'string' ? parseInt(guests) || 0 : guests;
 
-        if (!clientName || !clientPhone || !date || !time || !location || !finalGuests) {
+        if (!clientName.trim() || !clientPhone.trim() || !date || !time || !location.trim() || !finalGuests) {
             showNotice("Por favor, preencha todas as informações do evento (Nome, WhatsApp, Data, Horário, Local e Convidados).");
             return;
         }
@@ -123,59 +102,67 @@ const ClientOrderForm: React.FC<ClientOrderFormProps> = ({ onAdminRequest }) => 
             return;
         }
 
-        const counts = {
-            entradas: selectedItems.filter(i => i.category === 'Entrada').length,
-            principais: selectedItems.filter(i => i.category === 'Principal').length,
-            sobremesas: selectedItems.filter(i => i.category === 'Sobremesa').length
-        };
-
         const newOrder: Order = {
             id: Date.now().toString(),
-            clientName,
-            clientPhone,
+            clientName: clientName.trim(),
+            clientPhone: clientPhone.trim(),
             date,
             time,
-            location,
+            location: location.trim(),
             guests: finalGuests,
             items: selectedItems,
             pricePerHead: 0,
             totalValue: 0,
             status: OrderStatus.PENDING,
-            notes: notes,
+            notes: notes.trim(),
             waiterService: waiterService
         };
 
         addOrder(newOrder);
 
-        const itemsList = await generateWhatsappMessage(selectedItems);
+        // Formatação síncrona dos itens selecionados com destaque para Seleção Premium
+        const formatItem = (i: MenuItem) => i.isPremium ? `• ${i.name} ⭐ (Seleção Premium)` : `• ${i.name}`;
+        const entradas = selectedItems.filter(i => i.category === 'Entrada').map(formatItem).join('\n');
+        const principais = selectedItems.filter(i => i.category === 'Principal').map(formatItem).join('\n');
+        const sobremesas = selectedItems.filter(i => i.category === 'Sobremesa').map(formatItem).join('\n');
 
-        // Mensagem 1: Nome e Contato do Cliente
-        const message1 = `Olá Chef Thyago! Escolhi meu menu para 2026.
+        const waiterLine = waiterService 
+            ? '*Serviço de Garçom:* Sim (Taxa de R$ 140,00 - referente a 1 garçom)\n' 
+            : '*Serviço de Garçom:* Não solicitado\n';
 
-*Nome:* ${clientName}
-*Contato:* ${clientPhone}`;
+        const notesSection = notes.trim() 
+            ? `*Observações:*\n${notes.trim()}\n\n` 
+            : '';
 
-        // Mensagem 2: A partir da Data, Detalhes do Evento, Cardápio e Observações
-        const waiterLine = waiterService ? '*Serviço de Garçom:* Sim (Taxa de R$ 140,00 - referente a 1 garçom)\n' : '';
-        const notesLine = notes.trim() ? `*Observações:* ${notes.trim()}\n` : '';
+        // Mensagem completa e imediata contendo todos os dados e escolhas
+        const completeMessage = `Olá Chef Thyago! Escolhi meu menu para 2026.
 
-        const message2 = `*Data:* ${formatDisplayDate(date)} às ${time}
-*Local:* ${location}
+*DADOS DO CLIENTE:*
+*Nome:* ${clientName.trim()}
+*Contato:* ${clientPhone.trim()}
+
+*DETALHES DO EVENTO:*
+*Data:* ${formatDisplayDate(date)} às ${time}
+*Local:* ${location.trim()}
 *Convidados:* ${finalGuests} pessoas
 ${waiterLine}
-*Minha Seleção 2026:*
-${itemsList}
+*CARDÁPIO SELECIONADO:*
+*Entradas:*
+${entradas || '(Nenhuma selecionada)'}
 
-${notesLine}Aguardo o orçamento detalhado. Obrigado!`;
+*Pratos Principais:*
+${principais || '(Nenhum selecionado)'}
 
-        setMsg1Text(message1);
-        setMsg2Text(message2);
+*Sobremesa:*
+${sobremesas || '(Nenhuma selecionada)'}
 
-        // Dispara as duas mensagens simultâneas
-        triggerBothMessages(message1, message2);
+${notesSection}Aguardo o orçamento detalhado. Obrigado!`.trim();
 
-        // Abre modal para acompanhamento e reenvio caso o navegador bloqueie popups
-        setShowSuccessModal(true);
+        setSentMessageText(completeMessage);
+        setOrderSent(true);
+
+        // Abre o WhatsApp imediatamente com a mensagem completa pronta
+        openWhatsAppDirect(completeMessage);
     };
 
     const counts = {
@@ -488,162 +475,81 @@ ${notesLine}Aguardo o orçamento detalhado. Obrigado!`;
                         />
                     </div>
 
-                    {/* Section 6: Finalize Button */}
+                    {/* Section 6: Finalize Button & Status */}
                     <div className="bg-primary text-white p-8 shadow-2xl border border-secondary/30 text-center space-y-6">
-                        <div className="space-y-2">
-                            <h3 className="text-2xl font-serif font-bold text-secondary">Tudo Pronto?</h3>
-                            <p className="text-sm font-serif italic text-white/80">
-                                Clique abaixo para enviar sua seleção diretamente para o WhatsApp do Chef Thyago Lima.
-                            </p>
-                        </div>
+                        {!orderSent ? (
+                            <>
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-serif font-bold text-secondary">Tudo Pronto?</h3>
+                                    <p className="text-sm font-serif italic text-white/80">
+                                        Clique abaixo para enviar sua seleção diretamente para o WhatsApp do Chef Thyago Lima.
+                                    </p>
+                                </div>
 
-                        {selectedItems.length > 0 && (
-                            <div className="bg-white/10 p-4 border border-secondary/20 text-xs font-sans space-y-1 text-white/90">
-                                <p className="font-bold text-secondary uppercase tracking-wider mb-2">Resumo da Seleção:</p>
-                                <p>{selectedItems.length} item(ns) selecionado(s) ({counts.entradas} Entradas, {counts.principais} Principais, {counts.sobremesas} Sobremesa)</p>
-                                {waiterService && <p className="text-secondary">• Com serviço de garçom (R$ 140,00)</p>}
+                                {selectedItems.length > 0 && (
+                                    <div className="bg-white/10 p-4 border border-secondary/20 text-xs font-sans space-y-1 text-white/90">
+                                        <p className="font-bold text-secondary uppercase tracking-wider mb-2">Resumo da Seleção:</p>
+                                        <p>{selectedItems.length} item(ns) selecionado(s) ({counts.entradas} Entradas, {counts.principais} Principais, {counts.sobremesas} Sobremesa)</p>
+                                        {waiterService && <p className="text-secondary">• Com serviço de garçom (R$ 140,00)</p>}
+                                    </div>
+                                )}
+
+                                <button 
+                                    onClick={handleFinalize}
+                                    className="w-full py-5 bg-secondary text-primary font-bold uppercase tracking-widest text-sm shadow-xl hover:bg-yellow-500 transition-all duration-300 active:scale-[0.99] flex items-center justify-center gap-3 cursor-pointer"
+                                >
+                                    <Send size={20} />
+                                    Solicitar Orçamento no WhatsApp
+                                </button>
+                            </>
+                        ) : (
+                            <div className="space-y-5 animate-in fade-in duration-300">
+                                <div className="inline-flex items-center justify-center w-14 h-14 bg-green-500/20 text-green-400 rounded-full border border-green-500/30">
+                                    <CheckCircle2 size={32} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-serif font-bold text-secondary">
+                                        Mensagem Enviada para o WhatsApp!
+                                    </h3>
+                                    <p className="text-sm text-white/80 max-w-lg mx-auto leading-relaxed">
+                                        Seu pedido completo (com seus dados, data, horário, local, serviço de garçom e cardápio 2026 selecionado) foi enviado diretamente para o WhatsApp do <strong>Chef Thyago Lima</strong>.
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                                    <button
+                                        onClick={() => openWhatsAppDirect(sentMessageText)}
+                                        className="py-3.5 px-6 bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-wider text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-[0.99] cursor-pointer"
+                                    >
+                                        <MessageCircle size={16} />
+                                        <span>Reabrir WhatsApp</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleCopy(sentMessageText)}
+                                        className="py-3.5 px-6 bg-white/10 hover:bg-white/20 text-secondary border border-secondary/40 font-bold uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition cursor-pointer"
+                                    >
+                                        <Copy size={16} />
+                                        <span>{copied ? 'Copiado!' : 'Copiar Pedido Completo'}</span>
+                                    </button>
+                                </div>
+
+                                <div className="pt-4 border-t border-secondary/20">
+                                    <button
+                                        onClick={() => {
+                                            setOrderSent(false);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        className="text-xs text-secondary/80 hover:text-secondary underline tracking-wider uppercase transition cursor-pointer"
+                                    >
+                                        Fazer outra solicitação ou alterar dados
+                                    </button>
+                                </div>
                             </div>
                         )}
-
-                        <button 
-                            onClick={handleFinalize}
-                            className="w-full py-5 bg-secondary text-primary font-bold uppercase tracking-widest text-sm shadow-xl hover:bg-yellow-500 transition-all duration-300 active:scale-[0.99] flex items-center justify-center gap-3"
-                        >
-                            <Send size={20} />
-                            Solicitar Orçamento no WhatsApp
-                        </button>
                     </div>
 
                 </div>
             </main>
-
-            {/* Modal de Confirmação & Envio em 2 Mensagens Simultâneas */}
-            {showSuccessModal && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-[#FAF8F5] border border-secondary/40 shadow-2xl max-w-2xl w-full p-6 md:p-8 relative my-8 text-gray-900 animate-in fade-in zoom-in-95 duration-200">
-                        {/* Corner ornaments */}
-                        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-secondary"></div>
-                        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-secondary"></div>
-                        
-                        <button 
-                            onClick={() => setShowSuccessModal(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 p-1 transition"
-                            title="Fechar"
-                        >
-                            <X size={22} />
-                        </button>
-
-                        <div className="text-center pb-5 border-b border-secondary/20">
-                            <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 text-green-700 rounded-full mb-3 shadow-inner">
-                                <CheckCircle2 size={26} />
-                            </div>
-                            <h3 className="font-serif font-bold text-2xl md:text-3xl text-primary">
-                                Solicitação Pronta para Envio!
-                            </h3>
-                            <p className="text-gray-600 text-xs md:text-sm font-serif italic mt-1 max-w-md mx-auto">
-                                Conforme solicitado, separamos seu pedido em <strong className="text-primary not-italic font-sans font-semibold">2 mensagens simultâneas</strong> para o WhatsApp do Chef Thyago Lima.
-                            </p>
-                            <div className="mt-3 inline-flex items-center gap-2 bg-secondary/15 text-primary text-xs px-3 py-1 font-sans font-medium border border-secondary/30">
-                                <Sparkles size={14} className="text-secondary fill-secondary shrink-0" />
-                                <span>Disparo automático realizado no WhatsApp</span>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 space-y-5">
-                            {/* Message 1 Card */}
-                            <div className="bg-white border border-secondary/20 p-4 shadow-sm hover:border-secondary/40 transition">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-5 h-5 bg-primary text-secondary text-[11px] font-bold rounded-full flex items-center justify-center">1</span>
-                                        <h4 className="font-serif font-bold text-sm text-primary uppercase tracking-wider">
-                                            1ª Mensagem: Identificação
-                                        </h4>
-                                    </div>
-                                    <span className="text-[11px] text-gray-500 font-sans italic">Nome & Contato</span>
-                                </div>
-
-                                <pre className="bg-[#FAF8F5] p-3 text-xs font-mono text-gray-800 whitespace-pre-wrap border border-gray-200 rounded leading-relaxed select-all">
-                                    {msg1Text}
-                                </pre>
-
-                                <div className="flex items-center gap-2 mt-3">
-                                    <button
-                                        onClick={() => openWhatsAppMessage(msg1Text)}
-                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 px-3 uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99]"
-                                    >
-                                        <MessageCircle size={15} />
-                                        <span>Abrir 1ª Mensagem no WhatsApp</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleCopy(msg1Text, true)}
-                                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2.5 px-3 border border-gray-300 flex items-center gap-1.5 transition"
-                                        title="Copiar texto da mensagem 1"
-                                    >
-                                        <Copy size={14} />
-                                        <span>{copied1 ? 'Copiado!' : 'Copiar'}</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Message 2 Card */}
-                            <div className="bg-white border border-secondary/20 p-4 shadow-sm hover:border-secondary/40 transition">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-5 h-5 bg-primary text-secondary text-[11px] font-bold rounded-full flex items-center justify-center">2</span>
-                                        <h4 className="font-serif font-bold text-sm text-primary uppercase tracking-wider">
-                                            2ª Mensagem: Data & Cardápio Selecionado
-                                        </h4>
-                                    </div>
-                                    <span className="text-[11px] text-gray-500 font-sans italic">A partir da data</span>
-                                </div>
-
-                                <pre className="bg-[#FAF8F5] p-3 text-xs font-mono text-gray-800 whitespace-pre-wrap border border-gray-200 rounded max-h-48 overflow-y-auto leading-relaxed select-all">
-                                    {msg2Text}
-                                </pre>
-
-                                <div className="flex items-center gap-2 mt-3">
-                                    <button
-                                        onClick={() => openWhatsAppMessage(msg2Text)}
-                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 px-3 uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99]"
-                                    >
-                                        <MessageCircle size={15} />
-                                        <span>Abrir 2ª Mensagem no WhatsApp</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleCopy(msg2Text, false)}
-                                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2.5 px-3 border border-gray-300 flex items-center gap-1.5 transition"
-                                        title="Copiar texto da mensagem 2"
-                                    >
-                                        <Copy size={14} />
-                                        <span>{copied2 ? 'Copiado!' : 'Copiar'}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Bottom Actions */}
-                        <div className="mt-6 pt-5 border-t border-secondary/20 flex flex-col sm:flex-row items-center justify-between gap-3">
-                            <button
-                                onClick={() => triggerBothMessages(msg1Text, msg2Text)}
-                                className="w-full sm:w-auto px-4 py-2.5 bg-primary text-secondary hover:bg-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border border-secondary/40 transition"
-                            >
-                                <RefreshCw size={14} />
-                                <span>Reenviar Ambas Simultâneas</span>
-                            </button>
-
-                            <button
-                                onClick={() => {
-                                    setShowSuccessModal(false);
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }}
-                                className="w-full sm:w-auto px-5 py-2.5 bg-secondary text-primary hover:bg-yellow-500 text-xs font-bold uppercase tracking-widest shadow-md transition"
-                            >
-                                Concluir e Voltar ao Menu
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Footer */}
             <footer className="pb-16 pt-10 px-6 text-center">
